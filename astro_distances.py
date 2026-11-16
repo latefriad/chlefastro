@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
 AstroDistances - Calculate exact distances between Earth, the Moon, and all Planets
-+ Lunar Month Calculator (Calcul du mois de la Lune : 29 ou 30 jours, phases, âge, illumination)
++ Lunar Month Mathematical Logic (Logique & Calculs : Terre = 30 jours vs Lune = 29.530588... jours)
 Supports:
   - Exact calculations for any date/time (second-level precision) from 2000 to now and beyond.
   - Live real-time dashboard updating every second.
-  - Lunar month calculation (durée de 29 ou 30 jours, âge de la lune, calendrier des phases).
-  - Daily or second-by-second batch generation between 2000 and now with CSV export.
+  - Full mathematical logic comparing Earth month (30 days) and Lunar month (29.530588 days).
+  - The 5 astronomical lunar months (Synodic, Sidereal, Anomalistic, Draconic, Tropical).
   - Built-in web dashboard launcher.
 """
 
@@ -27,6 +27,17 @@ except ImportError:
 SPEED_OF_LIGHT_KM_S = 299792.458
 KM_PER_MILE = 1.609344
 
+# Fundamental astronomical constants
+T_LUNAR_SYNODIC = 29.530588853     # Synodic month (phases): 29d 12h 44m 02.9s
+T_LUNAR_SIDEREAL = 27.321661547    # Sidereal month (fixed stars): 27d 07h 43m 11.5s
+T_LUNAR_ANOMALISTIC = 27.554549878 # Anomalistic month (perigee to perigee): 27d 13h 18m 33.1s
+T_LUNAR_DRACONIC = 27.212220817    # Draconic month (nodes / eclipses): 27d 05h 05m 35.8s
+T_LUNAR_TROPICAL = 27.321582241    # Tropical month (vernal equinox): 27d 07h 43m 04.7s
+
+T_EARTH_YEAR_SOLAR = 365.24219     # Tropical solar year
+T_EARTH_MONTH_30 = 30.0            # Civil 30-day month
+T_EARTH_MONTH_AVG = 365.24219 / 12.0 # 30.43685 days
+
 BODIES = [
     {"id": "Moon", "name_en": "Moon", "name_fr": "Lune", "body": astronomy.Body.Moon, "symbol": "🌕"},
     {"id": "Sun", "name_en": "Sun", "name_fr": "Soleil", "body": astronomy.Body.Sun, "symbol": "☀️"},
@@ -39,6 +50,13 @@ BODIES = [
     {"id": "Neptune", "name_en": "Neptune", "name_fr": "Neptune", "body": astronomy.Body.Neptune, "symbol": "♆"},
     {"id": "Pluto", "name_en": "Pluto", "name_fr": "Pluton", "body": astronomy.Body.Pluto, "symbol": "♇"},
 ]
+
+def format_dhms(days_float: float) -> str:
+    d = int(days_float)
+    h = int((days_float - d) * 24)
+    m = int((((days_float - d) * 24) - h) * 60)
+    s = ((((days_float - d) * 24) - h) * 60 - m) * 60
+    return f"{d}j {h:02d}h {m:02d}m {s:04.1f}s"
 
 def format_light_time(seconds: float) -> str:
     if seconds < 60:
@@ -62,11 +80,10 @@ def calculate_distance(body: astronomy.Body, astro_time: astronomy.Time):
     dist_miles = dist_km / KM_PER_MILE
     light_time_s = dist_km / SPEED_OF_LIGHT_KM_S
 
-    # Compute radial velocity using a 1-second forward finite difference
     astro_time_next = astro_time.AddDays(1.0 / 86400.0)
     vec_next = astronomy.GeoVector(body, astro_time_next, True)
     dist_km_next = vec_next.Length() * astronomy.KM_PER_AU
-    velocity_km_s = dist_km_next - dist_km  # > 0 means moving away, < 0 means moving closer
+    velocity_km_s = dist_km_next - dist_km
 
     return {
         "au": dist_au,
@@ -79,7 +96,6 @@ def calculate_distance(body: astronomy.Body, astro_time: astronomy.Time):
     }
 
 def get_moon_phase_name(phase_deg: float, lang: str = "fr") -> str:
-    """Return lunar phase name based on ecliptic longitude difference (0 to 360 deg)."""
     deg = phase_deg % 360.0
     if deg < 15.0 or deg >= 345.0:
         return "Nouvelle Lune (New Moon) 🌑" if lang == "fr" else "New Moon 🌑"
@@ -98,16 +114,101 @@ def get_moon_phase_name(phase_deg: float, lang: str = "fr") -> str:
     else:
         return "Dernier Croissant (Waning Crescent) 🌘" if lang == "fr" else "Waning Crescent 🌘"
 
+def print_lunar_logic(dt: datetime, lang: str = "fr"):
+    """
+    Detailed explanation and mathematical calculations comparing:
+    Earth Month = 30 days vs Moon Month = 29.530588... days.
+    """
+    j2000 = datetime(2000, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+    delta_sec = (dt - j2000).total_seconds()
+    delta_days = delta_sec / 86400.0
+
+    earth_months_30 = delta_days / T_EARTH_MONTH_30
+    earth_months_avg = delta_days / T_EARTH_MONTH_AVG
+    lunar_months = delta_days / T_LUNAR_SYNODIC
+    diff_months = lunar_months - earth_months_30
+    diff_days = diff_months * T_LUNAR_SYNODIC
+
+    # Current cycle age
+    astro_time = astronomy.Time.Make(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+    prev_nm = astronomy.SearchMoonPhase(0.0, astro_time, -35.0)
+    next_nm = astronomy.SearchMoonPhase(0.0, astro_time, +35.0)
+    actual_cycle_days = next_nm.ut - prev_nm.ut
+    cycle_age = astro_time.ut - prev_nm.ut
+    cycle_rem = next_nm.ut - astro_time.ut
+
+    print("\n" + "=" * 105)
+    title = "🔬 LOGIQUE & CALCULS DU MOIS : TERRE (30 JOURS) vs LUNE (29.530588... JOURS) 🔬"
+    print(title.center(105))
+    print(f"Date analysée : {dt.strftime('%Y-%m-%d %H:%M:%S UTC')}".center(105))
+    print("=" * 105)
+
+    print("""
+1. 💡 POURQUOI LE MOIS DE LA LUNE VAUT-IL EXACTEMENT 29.530588... JOURS ?
+---------------------------------------------------------------------------------------------------------
+  • La Lune tourne autour de la Terre en 27.321661 jours (Mois Sidéral = 360° par rapport aux étoiles).
+  • Mais pendant ces 27.32 jours, la Terre avance autour du Soleil (environ 27° d'arc angulaire).
+  • Pour retrouver la même phase (Nouvelle Lune à Nouvelle Lune), la Lune doit rattraper ces 27°,
+    ce qui lui demande 2.208927 jours supplémentaires !
+  • Formule mathématique fondamentale :
+      1 / T_synodique = 1 / T_sidéral - 1 / T_terre
+      1 / T_synodique = (1 / 27.3216615) - (1 / 365.256363) = 0.0338653
+      => T_synodique = 29.530588853 jours (soit 29 jours, 12 heures, 44 minutes, 2.8 secondes).
+
+2. 🌍 TERRE vs 🌕 LUNE : LA LOGIQUE DU DÉCALAGE
+---------------------------------------------------------------------------------------------------------
+  • Sur Terre : L'année solaire (365.2422 jours) est divisée en 12 mois civils de 30 ou 31 jours
+    (Moyenne = 365.2422 / 12 = 30.43685 jours par mois, ou base civile de 30 jours).
+  • Sur la Lune : Le mois synodique est strictement de 29.530588 jours.
+  • Écart mensuel :
+      - Base 30 jours :  30.000000 - 29.530588 = +0.469412 jour (11h 15m 57s de moins par mois lunaire !)
+      - Base moyenne  :  30.436850 - 29.530588 = +0.906261 jour (21h 45m 01s d'écart par mois !)
+  • Écart annuel (Épacte) :
+      - 1 an terrestre = 365.2422 jours (12 mois solaires)
+      - 1 an lunaire   = 12 x 29.530588 = 354.3671 jours (12 mois lunaires)
+      => DÉCALAGE ANNUEL = 10.8751 JOURS / AN (environ 11 jours d'avance pour la Lune chaque année !)
+  • Cycle de 33 ans :
+      En 33 ans terrestres, la Lune prend 33 x 10.875 = 358.9 jours d'avance, soit 1 an entier de décalage !
+""")
+
+    print("3. 📊 CALCULS EXACTS DEPUIS L'AN 2000 (J2000) JUSQU'À CET INSTANT")
+    print("-" * 105)
+    print(f"  • Temps écoulé depuis le 01/01/2000 12:00 UTC : {delta_days:>12,.4f} jours terrestres")
+    print(f"  • Nombre de mois terrestres de 30 jours       : {earth_months_30:>12,.2f} mois de 30j")
+    print(f"  • Nombre de mois terrestres solaires moyens   : {earth_months_avg:>12,.2f} mois moyens")
+    print(f"  • Nombre de mois lunaires synodiques (29.53j) : {lunar_months:>12,.2f} mois lunaires")
+    print(f"  • DIFFÉRENCE EN NOMBRE DE MOIS                : {diff_months:>+12,.2f} mois lunaires supplémentaires !")
+    print(f"  • Décalage temporel cumulé                    : {diff_days:>+12,.2f} jours d'écart accumulés")
+    print("-" * 105)
+    print("  🌙 DANS LE MOIS LUNAIRE EN COURS :")
+    print(f"  • Âge actuel de la Lune     : Jour {cycle_age:.4f} sur {actual_cycle_days:.4f} jours ({cycle_age/actual_cycle_days*100:.1f}%)")
+    print(f"  • Temps restant dans le mois: {cycle_rem:.4f} jours ({format_dhms(cycle_rem)})")
+    print(f"  • Durée réelle de ce mois   : {format_dhms(actual_cycle_days)} (Classé : Mois de {'30' if actual_cycle_days >= 29.5 else '29'} jours)")
+
+    print("""
+4. 🪐 LES 5 TYPES DE MOIS DE LA LUNE (DÉFINITIONS ASTRONOMIQUES)
+---------------------------------------------------------------------------------------------------------
+  1. Mois Synodique     : 29.530589 jours (29j 12h 44m 03s) -> Phases (Nouvelle Lune à Nouvelle Lune)
+  2. Mois Sidéral       : 27.321661 jours (27j 07h 43m 12s) -> Révolution orbitale 360° (Étoiles fixes)
+  3. Mois Anomalistique : 27.554550 jours (27j 13h 18m 33s) -> De Périgée à Périgée (Distance min/max)
+  4. Mois Draconitique  : 27.212221 jours (27j 05h 05m 36s) -> De Nœud orbital à Nœud (Cycle des Éclipses)
+  5. Mois Tropique      : 27.321582 jours (27j 07h 43m 05s) -> Par rapport au Point Vernal terrestre
+
+5. 🏛️ LE CYCLE DE MÉTON (RÉCONCILIATION TERRE & LUNE)
+---------------------------------------------------------------------------------------------------------
+  • 19 années solaires terrestres = 19 x 365.2425 = 6 939.6075 jours
+  • 235 mois lunaires synodiques  = 235 x 29.53058885 = 6 939.6884 jours
+  => Différence : SEULEMENT 1 HEURE ET 56 MINUTES SUR 19 ANS !
+  Tous les 19 ans, les phases de la Lune retombent exactement aux mêmes dates du calendrier terrestre.
+=========================================================================================================
+""")
+
 def calculate_lunar_month(dt: datetime):
     """Calculate the lunar month encompassing the given datetime."""
     astro_time = astronomy.Time.Make(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second + dt.microsecond / 1e6)
     
-    # Previous New Moon (Start of current lunar month)
     prev_nm = astronomy.SearchMoonPhase(0.0, astro_time, -35.0)
-    # Next New Moon (End of current lunar month)
     next_nm = astronomy.SearchMoonPhase(0.0, astro_time, +35.0)
-    
-    # Intermediate quarters
     fq = astronomy.SearchMoonPhase(90.0, prev_nm, 35.0)
     fm = astronomy.SearchMoonPhase(180.0, prev_nm, 35.0)
     tq = astronomy.SearchMoonPhase(270.0, prev_nm, 35.0)
@@ -124,7 +225,6 @@ def calculate_lunar_month(dt: datetime):
     mins = int((((total_days - days_int) * 24) - hours) * 60)
     secs = int((((((total_days - days_int) * 24) - hours) * 60) - mins) * 60)
     
-    # Calculate Perigee (min distance) and Apogee (max distance) during this lunation
     curr = prev_nm
     min_km = float('inf')
     max_km = float('-inf')
@@ -220,7 +320,6 @@ def print_lunar_year(year: int, lang: str = "fr"):
         hours = int((dur - days_int) * 24)
         mins = int((((dur - days_int) * 24) - hours) * 60)
         dur_str = f"{days_int}j {hours:02d}h{mins:02d}"
-        
         type_str = f"🟩 29 jours" if cal_days == 29 else f"🟦 30 jours"
         
         start_str = nm.Utc().strftime("%Y-%m-%d %H:%M UTC")
@@ -269,17 +368,16 @@ def print_table(dt: datetime, lang: str = "en"):
         print(f"{name:<20} | {km_str} | {au_str} | {lt_str} | {vel_str:>19}")
     print("=" * 105)
     
-    # Quick Lunar Month Preview
     lunar = calculate_lunar_month(dt)
     phase_name = get_moon_phase_name(lunar["phase_deg"], lang=lang)
-    print(f"🌙 Mois lunaire actuel : {lunar['age_str']} | Type: Mois de {lunar['cal_days']} jours | {phase_name} ({lunar['illumination_pct']:.1f}%)")
+    print(f"🌙 Mois lunaire : {lunar['age_str']} | Type: Mois de {lunar['cal_days']} jours | {phase_name} ({lunar['illumination_pct']:.1f}%)")
+    print(f"💡 Pour voir toute la logique mathématique (Terre 30j vs Lune 29.530588j) : tapez 'python3 astro_distances.py --logic'")
     print("=" * 105 + "\n")
 
 def run_live(lang: str = "en"):
     print("\033[?25l", end="")  # hide cursor
     try:
         while True:
-            # Clear screen
             print("\033[H\033[J", end="")
             now = datetime.now(timezone.utc)
             print_table(now, lang=lang)
@@ -289,7 +387,7 @@ def run_live(lang: str = "en"):
     except KeyboardInterrupt:
         print("\n\nStopped.")
     finally:
-        print("\033[?25h", end="")  # restore cursor
+        print("\033[?25h", end="")
 
 def generate_range_csv(start_dt: datetime, end_dt: datetime, step_seconds: int, output_path: str):
     print(f"Generating distances from {start_dt.isoformat()} to {end_dt.isoformat()} (step: {step_seconds}s)...")
@@ -360,10 +458,11 @@ def start_web_server(port: int = 8080):
             print("\nWeb server stopped.")
 
 def main():
-    parser = argparse.ArgumentParser(description="Calculate exact distances between Earth and Moon, Sun, Planets + Lunar Month (29/30 days) from 2000 to now.")
+    parser = argparse.ArgumentParser(description="Calculate exact distances between Earth and Moon, Sun, Planets + Lunar Month (29.530588... days vs 30 days) from 2000 to now.")
     parser.add_argument("--date", "-d", help="Date & time in UTC (e.g. '2024-05-15 14:30:00' or '2000-01-01'). Defaults to now.")
     parser.add_argument("--live", "-l", action="store_true", help="Live mode updating every second in the terminal.")
     parser.add_argument("--lang", choices=["en", "fr"], default="fr", help="Language: 'fr' (Français, default) or 'en' (English).")
+    parser.add_argument("--logic", action="store_true", help="Display full mathematical logic and formulas: Earth 30 days vs Moon 29.530588 days.")
     parser.add_argument("--lunar", "-m", action="store_true", help="Display full Lunar Month report (durée 29 ou 30 jours, phases, âge, périgée, apogée).")
     parser.add_argument("--lunar-year", type=int, metavar="YEAR", help="List all lunar months of a year (e.g. --lunar-year 2026) indicating 29 or 30 days.")
     parser.add_argument("--range", nargs=2, metavar=("START", "END"), help="Calculate a time range, e.g. --range 2000-01-01 2026-11-16")
@@ -378,15 +477,18 @@ def main():
         start_web_server(args.port)
         return
 
-    if args.lunar_year:
-        print_lunar_year(args.lunar_year, lang=args.lang)
-        return
-
-    # Single date
     if args.date:
         dt = parse_date(args.date)
     else:
         dt = datetime.now(timezone.utc)
+
+    if args.logic:
+        print_lunar_logic(dt, lang=args.lang)
+        return
+
+    if args.lunar_year:
+        print_lunar_year(args.lunar_year, lang=args.lang)
+        return
 
     if args.lunar:
         print_lunar_month_report(dt, lang=args.lang)

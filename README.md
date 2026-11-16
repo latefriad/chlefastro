@@ -1,8 +1,8 @@
 # 🪐 AstroDistance (chlefastro)
 
-Calculateur haute précision des distances astronomiques et **Calcul du Mois Lunaire (29 ou 30 Jours)**.
+Calculateur haute précision des distances astronomiques et **Logique Complète du Mois Lunaire : Terre (30 Jours) vs Lune (29.530588... Jours)**.
 
-Ce projet calcule la distance entre la **Terre** et :
+Ce projet calcule la distance en temps réel entre la **Terre** et :
 - 🌕 **La Lune (Moon)**
 - ☀️ **Le Soleil (Sun)**
 - ☿️ **Mercure (Mercury)**
@@ -14,85 +14,102 @@ Ce projet calcule la distance entre la **Terre** et :
 - ♆ **Neptune**
 - ♇ **Pluton (Pluto)**
 
-Et intègre désormais le **Calcul Complet du Mois de la Lune (Cycle de 29 ou 30 jours)** :
-- 🌙 Détermination exacte si le mois compte **29 jours** ou **30 jours**.
-- 📅 Âge précis de la Lune (ex: *Jour 7.42 sur 29.74 jours*).
-- 🌓 Phase de la Lune actuelle (Nouvelle Lune, Premier Croissant / Hilal, Premier Quartier, Pleine Lune / Badr...).
-- 💡 Pourcentage d'illumination du disque lunaire (ex: *43%*).
-- 🗓️ Dates et heures précises des 4 phases clés du mois (Nouvelle Lune, 1er Quartier, Pleine Lune, Dernier Quartier).
-- 🟢 Périgée (distance minimale du mois) et 🔴 Apogée (distance maximale du mois).
-- 📜 Tableau explorateur de **tous les mois lunaires de 2000 à aujourd'hui** (avec indication 29 jours / 30 jours et export CSV).
+Et intègre désormais **toute la logique mathématique et physique du mois lunaire** :
+- 📐 **Pourquoi la Lune fait 29.530588... jours alors que la Terre compte 30 jours ?**
+- 🔬 Démonstration par la formule des périodes synodiques.
+- 📊 Calculs exacts du décalage cumulé depuis l'an 2000 jusqu'à aujourd'hui.
+- 🪐 Les **5 types de mois lunaires** (Synodique, Sidéral, Anomalistique, Draconitique, Tropique).
+- 🔄 Convertisseur interactif Mois Terrestres (30j) $\leftrightarrow$ Mois Lunaires (29.530588j).
+- 🏛️ Le Cycle de Méton (19 ans terrestres = 235 mois lunaires).
 
 ---
 
-## 🚀 1. Utilisation de l'Application Web Interactive (`index.html`)
+## 🔬 La Logique Mathématique : Terre (30 Jours) vs Lune (29.530588... Jours)
 
-L'application web fonctionne **100% hors ligne** et sans aucune dépendance externe.
-
-### Comment l'ouvrir :
-- **Option 1 (Double-clic)** : Ouvrez simplement [index.html](file:///Users/latefriad/Downloads/astro/index.html) dans votre navigateur.
-- **Option 2 (Terminal Mac)** :
-  ```bash
-  open index.html
-  ```
-- **Option 3 (Serveur local)** :
-  ```bash
-  python3 astro_distances.py --web
-  ```
-
-### Fonctionnalités de l'interface :
-1. ⚡ **Mode Temps Réel** : Actualisé chaque seconde en direct (distances et vitesses).
-2. 📅 **Date & Heure au Choix (2000 - Présent)** : Entrez n'importe quel jour, année, heure, minute, seconde avec boutons de pas rapide.
-3. 🌙 **Onglet "Mois Lunaire (29 / 30 Jours)"** :
-   - Disque lunaire dessiné dynamiquement avec phase réaliste.
-   - Badge indiquant si le mois en cours est un **Mois de 29 Jours** ou **Mois de 30 Jours**.
-   - Âge de la Lune avec barre de progression de la lunaison.
-   - Calendrier Hégirien / Hijri (ex: *6 Joumada ath-Thania 1448 AH*).
-   - Calendrier des 4 phases clés (Nouvelle Lune, Premier Quartier, Pleine Lune, Dernier Quartier).
-   - Tableau explorateur de tous les mois de l'année sélectionnée (avec export CSV).
-4. 🔭 **Radar Orbital Héliocentrique** : Visualisation 2D en temps réel des orbites planétaires.
-5. 📈 **Graphique Historique 2000-Présent** : Courbe des distances au fil des années avec survol interactif et export CSV.
+### 1. Pourquoi le mois lunaire dure-t-il exactement 29.530588 jours ?
+1. **La révolution sidérale (360°)** : La Lune met **$27.321661\text{ jours}$** pour faire un tour complet autour de la Terre par rapport aux étoiles fixes.
+2. **Le déplacement de la Terre** : Pendant ces $27.32$ jours, la Terre avance elle-même sur son orbite autour du Soleil d'environ **$27°$ d'arc angulaire**.
+3. **Le rattrapage (+2.21 jours)** : Pour retrouver la même phase (ex: Nouvelle Lune à Nouvelle Lune), la Lune doit parcourir ces $27°$ supplémentaires, ce qui lui prend **$2.208927\text{ jours}$**.
+4. **Formule mathématique fondamentale** :
+   $$\frac{1}{T_{\text{synodique}}} = \frac{1}{T_{\text{sidéral}}} - \frac{1}{T_{\text{Terre}}}$$
+   $$\frac{1}{T_{\text{synodique}}} = \frac{1}{27.3216615} - \frac{1}{365.256363} = 0.0338653 \implies T_{\text{synodique}} = \mathbf{29.53058885\text{ jours}}$$
+   Soit exactement : **$29\text{ jours, } 12\text{ heures, } 44\text{ minutes, } 02.82\text{ secondes}$**.
 
 ---
 
-## 💻 2. Script Python en Ligne de Commande (`astro_distances.py`)
+### 2. Pourquoi sur Terre le mois compte 30 jours ?
+- **L'année solaire terrestre** dure $365.2422$ jours (temps pour faire un tour complet du Soleil et boucler le cycle des 4 saisons).
+- Pour diviser l'année en 12 saisons régulières :
+  $$\frac{365.2422}{12} \approx \mathbf{30.43685\text{ jours par mois}}$$
+- C'est pourquoi le calendrier solaire terrestre utilise des mois civils de **30 et 31 jours**.
 
-### A. Rapport complet du Mois Lunaire (29 ou 30 jours) :
+---
+
+### 3. La Logique du Décalage Terre vs Lune
+- **Par mois** (base 30 jours) :
+  $$30.000000 - 29.530588 = \mathbf{+0.469412\text{ jour}}\quad (11\text{h } 15\text{m } 57\text{s de moins par mois lunaire})$$
+- **Par an (L'Épacte)** :
+  - 1 an solaire = $365.2422$ jours (12 mois terrestres)
+  - 1 an lunaire = $12 \times 29.530588 = \mathbf{354.3671\text{ jours}}$ (12 mois lunaires)
+  - **Décalage annuel** : $365.2422 - 354.3671 = \mathbf{10.8751\text{ jours par an}}$ ($\approx 11$ jours d'avance lunaire chaque année).
+- **Cycle de 33 ans** :
+  $$33 \times 10.8751 \approx 358.9\text{ jours} \approx \mathbf{1\text{ an entier de décalage !}}$$
+
+---
+
+### 4. Les 5 Définitions Astronomiques du Mois de la Lune
+
+| Type de Mois Lunaire | Définition Physique | Durée Décimale | Durée Formatée |
+| :--- | :--- | :--- | :--- |
+| **1. Mois Synodique (Lunaison)** | Nouvelle Lune $\rightarrow$ Nouvelle Lune (Phases) | **29.530589 j** | **29j 12h 44m 02.9s** |
+| **2. Mois Sidéral** | Révolution orbitale à 360° (Étoiles fixes) | 27.321661 j | 27j 07h 43m 11.5s |
+| **3. Mois Anomalistique** | Périgée $\rightarrow$ Périgée (Distance min/max) | 27.554550 j | 27j 13h 18m 33.1s |
+| **4. Mois Draconitique** | Nœud orbital $\rightarrow$ Nœud (Cycle des éclipses) | 27.212221 j | 27j 05h 05m 35.8s |
+| **5. Mois Tropique** | Par rapport au Point Vernal terrestre | 27.321582 j | 27j 07h 43m 04.7s |
+
+---
+
+## 🚀 Utilisation de l'Application Web Interactive (`index.html`)
+
+Ouvrez simplement [index.html](file:///Users/latefriad/Downloads/astro/index.html) dans votre navigateur (ou tapez `open index.html`).
+
+- ⚡ **Onglet "Temps Réel"** : Toutes les distances calculées chaque seconde en direct.
+- 📅 **Onglet "Date & Heure"** : Entrez n'importe quelle date/heure entre 2000 et 2099.
+- 🌙 **Onglet "Logique & Calculs Mois Lunaire (29.53j)"** :
+  - Disque lunaire interactif avec phases réalistes.
+  - Formules mathématiques complètes et démonstrations.
+  - Compteurs en direct depuis l'an 2000 (Jours, Mois de 30j, Mois lunaires, Écart).
+  - Convertisseur interactif Terre $\leftrightarrow$ Lune.
+  - Tableau des 5 types de mois lunaires.
+  - Explorateur de tous les mois lunaires par année avec durée (29 ou 30 jours).
+- 🔭 **Radar Orbital Héliocentrique** : Visualisation 2D en temps réel des orbites.
+- 📈 **Graphique Historique 2000-Présent** : Courbes d'évolution et export CSV.
+
+---
+
+## 💻 Script Python en Ligne de Commande (`astro_distances.py`)
+
+### A. Afficher toute la logique et les formules :
+```bash
+python3 astro_distances.py --logic
+```
+
+### B. Rapport complet du mois lunaire actuel :
 ```bash
 python3 astro_distances.py --lunar
 ```
 
-### B. Lister tous les mois lunaires d'une année (ex: 2026) avec leur durée (29 ou 30 jours) :
+### C. Liste de tous les mois lunaires d'une année (ex: 2026) :
 ```bash
 python3 astro_distances.py --lunar-year 2026
 ```
 
-### C. Calcul instantané des distances :
+### D. Calcul des distances instantanées :
 ```bash
 python3 astro_distances.py
 ```
 
-### D. Calcul pour une date et heure précise :
-```bash
-python3 astro_distances.py --date "2000-01-01 12:00:00"
-```
-
-### E. Mode Direct (Mise à jour chaque seconde dans le terminal) :
+### E. Mode direct rafraîchi chaque seconde dans le terminal :
 ```bash
 python3 astro_distances.py --live
 ```
-
-### F. Calcul jour par jour entre 2000 et aujourd'hui (Export CSV) :
-```bash
-python3 astro_distances.py --range 2000-01-01 2026-11-16 --step day --output distances_2000_2026.csv
-```
-
----
-
-## 📐 Mécanique Céleste & Mois Lunaire (29 ou 30 Jours)
-
-- **Mois Synodique Moyen** : $\approx 29.53059\text{ jours}$ ($29\text{ jours, } 12\text{ heures, } 44\text{ minutes}$).
-- **Variation Réelle** : En raison de l'excentricité de l'orbite de la Lune et de la Terre, la durée d'une lunaison réelle oscille entre **$29.27$ jours** ($\approx 29\text{j } 06\text{h}$) et **$29.83$ jours** ($\approx 29\text{j } 20\text{h}$).
-- **Règle des 29 / 30 jours** :
-  - Si la lunaison astronomique est inférieure à $29.5$ jours, le mois civil/calendaire compte **29 jours**.
-  - Si la lunaison astronomique dépasse $29.5$ jours, le mois civil/calendaire compte **30 jours**.
