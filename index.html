@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AstroDistance — Distances & Logique du Mois Lunaire (29.530588... Jours)</title>
+  <title>AstroDistance — Distances & Calcul dans la Lune pour n'importe quelle Date/Heure</title>
   <style>
     :root {
       --bg-dark: #070a14;
@@ -314,7 +314,64 @@
       color: #fff;
     }
 
-    /* Tab 3: Lunar Month & Mathematical Logic */
+    /* DIRECT LUNAR RESULT BOX INSIDE CUSTOM DATE TAB */
+    .custom-lunar-instant-box {
+      margin-top: 22px;
+      background: rgba(10, 18, 36, 0.95);
+      border: 1.5px solid rgba(253, 224, 71, 0.45);
+      border-radius: 14px;
+      padding: 18px 22px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+
+    .custom-lunar-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding-bottom: 10px;
+    }
+
+    .custom-lunar-header h3 {
+      font-size: 1.15rem;
+      color: #fde047;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-lunar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+    }
+
+    .custom-lunar-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .custom-lunar-card .l-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .custom-lunar-card .l-val {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Tab 3: Lunar Month & Deep Mathematical Logic */
     .lunar-hero {
       display: grid;
       grid-template-columns: 1fr;
@@ -340,11 +397,19 @@
       box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(253, 224, 71, 0.1);
     }
 
+    #moonPhaseCanvas, #miniMoonCanvas {
+      display: block;
+      border-radius: 50%;
+    }
+
     #moonPhaseCanvas {
       width: 180px;
       height: 180px;
-      display: block;
-      border-radius: 50%;
+    }
+
+    #miniMoonCanvas {
+      width: 50px;
+      height: 50px;
     }
 
     .lunar-moon-name {
@@ -494,7 +559,7 @@
       color: var(--accent-cyan);
     }
 
-    /* Mathematical Logic Box (Earth 30 vs Moon 29.530588) */
+    /* Mathematical Logic Box */
     .logic-container {
       margin-top: 28px;
       background: rgba(10, 18, 36, 0.9);
@@ -580,7 +645,6 @@
       color: #fde047;
     }
 
-    /* Live Counters 2000 to Now */
     .counters-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -609,7 +673,6 @@
       color: #38bdf8;
     }
 
-    /* Converter Tool */
     .converter-box {
       margin-top: 20px;
       background: rgba(0,0,0,0.4);
@@ -649,7 +712,6 @@
       border-color: var(--accent-cyan);
     }
 
-    /* The 5 Types of Lunar Months Table */
     .five-months-table {
       width: 100%;
       border-collapse: collapse;
@@ -725,6 +787,43 @@
 
     table.lunar-table tr:hover td {
       background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Tab 4: Simulation */
+    .sim-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .play-btn {
+      background: linear-gradient(135deg, #0284c7, var(--accent-cyan));
+      border: none;
+      color: #030712;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 11px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
+    }
+
+    .play-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(56, 189, 248, 0.55);
+    }
+
+    .speed-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
     }
 
     /* Layout */
@@ -950,7 +1049,6 @@
       color: var(--text-main);
     }
 
-    /* Proximity Gauge */
     .proximity-gauge-wrap {
       display: flex;
       flex-direction: column;
@@ -1236,6 +1334,46 @@
         <button class="stepper-btn" data-step="86400">+1 Jour</button>
         <button class="stepper-btn" data-step="31536000">+1 An</button>
       </div>
+
+      <!-- INSTANT LUNAR CALCULATION FOR THIS CUSTOM DATE -->
+      <div class="custom-lunar-instant-box">
+        <div class="custom-lunar-header">
+          <h3>
+            <canvas id="miniMoonCanvas" width="50" height="50"></canvas>
+            <span>🌙 RÉSULTAT DANS LA LUNE (POUR CETTE DATE & HEURE)</span>
+          </h3>
+          <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #fde047;" id="customDateDisplayStr">
+            2026-11-16 12:00:00 UTC
+          </div>
+        </div>
+
+        <div class="custom-lunar-grid">
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Âge & Jour dans la Lune</div>
+            <div class="l-val" id="custAgeVal" style="color:#fde047;">Jour -- / 29.53j</div>
+          </div>
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Type de Mois Lunaire</div>
+            <div class="l-val" id="custTypeVal" style="color:#38bdf8;">--</div>
+          </div>
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Mois Lunaires depuis 2000</div>
+            <div class="l-val" id="custLunationsVal" style="color:#34d399;">--</div>
+          </div>
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Phase & Illumination</div>
+            <div class="l-val" id="custPhaseVal" style="color:#fff; font-size: 1rem;">--</div>
+          </div>
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Calendrier Hégirien / Hijri</div>
+            <div class="l-val" id="custHijriVal" style="color:#fcd34d; font-size: 0.95rem;">--</div>
+          </div>
+          <div class="custom-lunar-card">
+            <div class="l-lbl">Distance Terre &harr; Lune</div>
+            <div class="l-val" id="custMoonDistVal" style="color:#60a5fa;">-- km</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Tab 3: Lunar Month & Deep Mathematical Logic -->
@@ -1335,7 +1473,6 @@
           </div>
         </div>
 
-        <!-- Formula banner -->
         <div class="formula-banner">
           <div>📐 <strong>Formule Fondamentale de la Lunaison :</strong></div>
           <div style="font-size: 1.15rem; margin: 6px 0; color: #fff;">
@@ -1348,7 +1485,6 @@
         </div>
 
         <div class="logic-grid-2">
-          <!-- Card 1: The Why -->
           <div class="logic-card">
             <h4>💡 Pourquoi 29.530588 jours et pas 27.32 jours ?</h4>
             <ul>
@@ -1359,7 +1495,6 @@
             </ul>
           </div>
 
-          <!-- Card 2: Earth 30 vs Moon 29.53 -->
           <div class="logic-card">
             <h4>🌍 Pourquoi la Terre compte 30 jours et la Lune 29.53 jours ?</h4>
             <ul>
@@ -1374,7 +1509,7 @@
 
         <!-- Live Accumulated Counters Since 2000 -->
         <div style="font-weight: 700; font-size: 0.95rem; color: #fde047; margin-bottom: 8px;">
-          📊 Cumul Exact Depuis le 1er Janvier 2000 (J2000) jusqu'à cet instant :
+          📊 Cumul Exact Depuis le 1er Janvier 2000 (J2000) jusqu'à cette Date & Heure :
         </div>
         <div class="counters-row">
           <div class="counter-item">
@@ -1612,22 +1747,19 @@
   <div class="cli-section">
     <h3>💻 Script Python en Ligne de Commande & Export</h3>
     <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
-      Le script Python intègre également la logique mathématique complète (Terre 30j vs Lune 29.530588j) :
+      Le script Python calcule directement dans la Lune pour n'importe quelle date et heure :
     </p>
     <div class="cli-code">
-# 1. Afficher toute la logique et les formules (Terre 30j vs Lune 29.530588j) :
-python3 astro_distances.py --logic
+# 1. Calcul dans la Lune pour une date et heure précise :
+python3 astro_distances.py --date "2024-05-15 14:30:00" --logic
 
-# 2. Calcul du mois lunaire actuel (phases, périgée, apogée) :
-python3 astro_distances.py --lunar
+# 2. Calcul du mois lunaire à la date voulue :
+python3 astro_distances.py --date "2024-05-15 14:30:00" --lunar
 
-# 3. Liste de tous les mois lunaires d'une année (ex: 2026) avec type (29j ou 30j) :
-python3 astro_distances.py --lunar-year 2026
+# 3. Toutes les distances + résumé lunaire :
+python3 astro_distances.py --date "2024-05-15 14:30:00"
 
-# 4. Calcul instantané des distances :
-python3 astro_distances.py
-
-# 5. Mode direct dans le terminal (actualisé chaque seconde) :
+# 4. Mode direct dans le terminal :
 python3 astro_distances.py --live</div>
   </div>
 
@@ -1802,7 +1934,6 @@ function calculateForDate(date) {
     };
   }
 
-  // Earth heliocentric
   const earthHVec = Astronomy.HelioVector(Astronomy.Body.Earth, astroTime);
   results["Earth"] = {
     helio: { x: earthHVec.x, y: earthHVec.y }
@@ -1833,7 +1964,6 @@ function calculateLunarMonth(date) {
   const mins = Math.floor((((totalDays - daysInt) * 24) - hours) * 60);
   const secs = Math.floor((((((totalDays - daysInt) * 24) - hours) * 60) - mins) * 60);
 
-  // Perigee & Apogee estimation
   let curr = Astronomy.MakeTime(new Date(prevNM.date.getTime()));
   let minKm = Infinity, maxKm = -Infinity;
   const stepDays = 1.0 / 24.0;
@@ -1844,7 +1974,6 @@ function calculateLunarMonth(date) {
     curr = curr.AddDays(stepDays);
   }
 
-  // Hijri representation
   let hijriStr = "";
   try {
     const locale = currentLang === 'fr' ? 'fr-FR-u-ca-islamic-umalqura' : 'en-US-u-ca-islamic-umalqura';
@@ -1853,7 +1982,6 @@ function calculateLunarMonth(date) {
     hijriStr = "Calendrier Lunaire";
   }
 
-  // Delta since J2000
   const deltaDaysSince2000 = (date.getTime() - J2000_EPOCH.getTime()) / (86400 * 1000);
   const earthMonths30 = deltaDaysSince2000 / T_EARTH_MONTH_30;
   const lunarMonths = deltaDaysSince2000 / T_LUNAR_SYNODIC;
@@ -1886,29 +2014,27 @@ function calculateLunarMonth(date) {
 
 // --- Draw Moon Phase Realistically on Canvas ---
 function drawMoonPhase(canvas, phaseDeg, illumFraction) {
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
-  const r = (w / 2) - 8;
+  const r = (w / 2) - 4;
   const cx = w / 2;
   const cy = h / 2;
 
   ctx.clearRect(0, 0, w, h);
 
-  // Outer glow
   ctx.save();
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fillStyle = "#1e293b";
   ctx.fill();
 
-  // Dark side base
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fillStyle = "#0f172a";
   ctx.fill();
 
-  // Draw illuminated crescent or gibbous shape
   const deg = (phaseDeg % 360 + 360) % 360;
   const isWaxing = deg < 180;
   const k = Math.cos(deg * Math.PI / 180);
@@ -1918,27 +2044,14 @@ function drawMoonPhase(canvas, phaseDeg, illumFraction) {
   ctx.ellipse(cx, cy, Math.abs(k) * r, r, 0, Math.PI / 2, -Math.PI / 2, (k > 0 ? isWaxing : !isWaxing));
   ctx.fillStyle = "#fef08a";
   ctx.shadowColor = "#fef08a";
-  ctx.shadowBlur = 18;
-  ctx.fill();
-  ctx.restore();
-
-  // Moon craters effect
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.clip();
-  ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
-  ctx.beginPath();
-  ctx.arc(cx - 20, cy - 25, 18, 0, Math.PI * 2);
-  ctx.arc(cx + 35, cy + 10, 24, 0, Math.PI * 2);
-  ctx.arc(cx - 10, cy + 40, 20, 0, Math.PI * 2);
+  ctx.shadowBlur = w > 100 ? 16 : 6;
   ctx.fill();
   ctx.restore();
 
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.strokeStyle = "rgba(253, 224, 71, 0.35)";
-  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = "rgba(253, 224, 71, 0.4)";
+  ctx.lineWidth = 1;
   ctx.stroke();
 }
 
@@ -2041,11 +2154,42 @@ function updateLunarDashboard(date, results) {
   const lunar = calculateLunarMonth(date);
   const phaseInfo = getMoonPhaseName(lunar.phaseDeg);
 
+  // 1. Big canvas on Tab 3
   const moonCanvas = document.getElementById("moonPhaseCanvas");
   if (moonCanvas) {
     drawMoonPhase(moonCanvas, lunar.phaseDeg, lunar.illumPct / 100);
   }
 
+  // 2. Mini canvas on Tab 2
+  const miniCanvas = document.getElementById("miniMoonCanvas");
+  if (miniCanvas) {
+    drawMoonPhase(miniCanvas, lunar.phaseDeg, lunar.illumPct / 100);
+  }
+
+  // Update Instant Box on Tab 2
+  const dateStrUtc = date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+  const elDateStr = document.getElementById("customDateDisplayStr");
+  if (elDateStr) elDateStr.textContent = dateStrUtc;
+
+  const elCustAge = document.getElementById("custAgeVal");
+  if (elCustAge) elCustAge.textContent = `Jour ${lunar.ageDays.toFixed(2)} / ${lunar.totalDays.toFixed(2)}j (${((lunar.ageDays/lunar.totalDays)*100).toFixed(1)}%)`;
+
+  const elCustType = document.getElementById("custTypeVal");
+  if (elCustType) elCustType.textContent = `Mois de ${lunar.calDays} Jours (${lunar.durationStr})`;
+
+  const elCustLun = document.getElementById("custLunationsVal");
+  if (elCustLun) elCustLun.textContent = `${lunar.lunarMonths.toFixed(2)} lunaisons (+${lunar.diffMonths.toFixed(2)} mois)`;
+
+  const elCustPhase = document.getElementById("custPhaseVal");
+  if (elCustPhase) elCustPhase.textContent = `${phaseInfo.name} (${lunar.illumPct.toFixed(1)}%)`;
+
+  const elCustHijri = document.getElementById("custHijriVal");
+  if (elCustHijri) elCustHijri.textContent = lunar.hijriStr;
+
+  const elCustDist = document.getElementById("custMoonDistVal");
+  if (elCustDist && results["Moon"]) elCustDist.textContent = formatNumber(results["Moon"].km, 1) + " km";
+
+  // Tab 3 elements
   const elPhase = document.getElementById("lunarPhaseName");
   if (elPhase) elPhase.textContent = phaseInfo.name;
 
