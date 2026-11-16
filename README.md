@@ -1,6 +1,8 @@
-# 🪐 AstroDistance — Calculateur de Distances Terre, Lune & Toutes les Planètes
+# 🪐 AstroDistance (chlefastro)
 
-Calcul haute précision des distances entre la **Terre** et :
+Calculateur haute précision des distances astronomiques et **Calcul du Mois Lunaire (29 ou 30 Jours)**.
+
+Ce projet calcule la distance entre la **Terre** et :
 - 🌕 **La Lune (Moon)**
 - ☀️ **Le Soleil (Sun)**
 - ☿️ **Mercure (Mercury)**
@@ -12,10 +14,14 @@ Calcul haute précision des distances entre la **Terre** et :
 - ♆ **Neptune**
 - ♇ **Pluton (Pluto)**
 
-Ce projet répond directement à votre demande :
-1. **Entrez simplement l'année, le jour et l'heure**, et l'outil calcule instantanément toutes les distances.
-2. **Mode temps réel (Chaque Seconde)** : actualisation automatique chaque seconde montrant l'évolution exacte en kilomètres et en vitesse d'approche ou d'éloignement.
-3. **Calcul jour par jour ou seconde par seconde entre 2000 et aujourd'hui (ou n'importe quelle période)** avec graphique interactif et export CSV/JSON.
+Et intègre désormais le **Calcul Complet du Mois de la Lune (Cycle de 29 ou 30 jours)** :
+- 🌙 Détermination exacte si le mois compte **29 jours** ou **30 jours**.
+- 📅 Âge précis de la Lune (ex: *Jour 7.42 sur 29.74 jours*).
+- 🌓 Phase de la Lune actuelle (Nouvelle Lune, Premier Croissant / Hilal, Premier Quartier, Pleine Lune / Badr...).
+- 💡 Pourcentage d'illumination du disque lunaire (ex: *43%*).
+- 🗓️ Dates et heures précises des 4 phases clés du mois (Nouvelle Lune, 1er Quartier, Pleine Lune, Dernier Quartier).
+- 🟢 Périgée (distance minimale du mois) et 🔴 Apogée (distance maximale du mois).
+- 📜 Tableau explorateur de **tous les mois lunaires de 2000 à aujourd'hui** (avec indication 29 jours / 30 jours et export CSV).
 
 ---
 
@@ -24,69 +30,69 @@ Ce projet répond directement à votre demande :
 L'application web fonctionne **100% hors ligne** et sans aucune dépendance externe.
 
 ### Comment l'ouvrir :
-- **Option 1 (Double-clic)** : Ouvrez simplement le fichier `index.html` dans votre navigateur (Chrome, Safari, Firefox, Edge).
+- **Option 1 (Double-clic)** : Ouvrez simplement [index.html](file:///Users/latefriad/Downloads/astro/index.html) dans votre navigateur.
 - **Option 2 (Terminal Mac)** :
   ```bash
   open index.html
   ```
-- **Option 3 (Serveur local automatique)** :
+- **Option 3 (Serveur local)** :
   ```bash
   python3 astro_distances.py --web
   ```
 
 ### Fonctionnalités de l'interface :
-- ⚡ **Onglet "Temps Réel"** : Met à jour chaque seconde toutes les distances en direct (km, UA, miles, temps de parcours de la lumière).
-- 📅 **Onglet "Date & Heure au Choix"** : Sélectionnez l'année (de 2000 à 2099), le mois, le jour, l'heure, la minute et la seconde. Boutons de raccourcis (+1s, -1s, +1j, -1j, J2000, etc.).
-- ⏯️ **Onglet "Simulation"** : Avancez dans le temps à vitesse accélérée (1 heure/s, 1 jour/s, 1 mois/s).
-- 🔭 **Radar Orbital Héliocentrique** : Carte 2D en temps réel des orbites du Système Solaire avec faisceau reliant la Terre à l'astre choisi.
-- 📈 **Graphique Historique 2000-Présent** : Affiche la courbe des distances au fil des années, avec infobulles au survol pour identifier les oppositions (plus proches approches).
-- 💾 **Bouton "Exporter CSV"** : Télécharge instantanément un tableur Excel / CSV avec toutes les valeurs calculées.
-- 🌐 **Bilingue** : Basculez entre le Français et l'Anglais en un clic.
+1. ⚡ **Mode Temps Réel** : Actualisé chaque seconde en direct (distances et vitesses).
+2. 📅 **Date & Heure au Choix (2000 - Présent)** : Entrez n'importe quel jour, année, heure, minute, seconde avec boutons de pas rapide.
+3. 🌙 **Onglet "Mois Lunaire (29 / 30 Jours)"** :
+   - Disque lunaire dessiné dynamiquement avec phase réaliste.
+   - Badge indiquant si le mois en cours est un **Mois de 29 Jours** ou **Mois de 30 Jours**.
+   - Âge de la Lune avec barre de progression de la lunaison.
+   - Calendrier Hégirien / Hijri (ex: *6 Joumada ath-Thania 1448 AH*).
+   - Calendrier des 4 phases clés (Nouvelle Lune, Premier Quartier, Pleine Lune, Dernier Quartier).
+   - Tableau explorateur de tous les mois de l'année sélectionnée (avec export CSV).
+4. 🔭 **Radar Orbital Héliocentrique** : Visualisation 2D en temps réel des orbites planétaires.
+5. 📈 **Graphique Historique 2000-Présent** : Courbe des distances au fil des années avec survol interactif et export CSV.
 
 ---
 
-## 💻 2. Utilisation en Ligne de Commande Python (`astro_distances.py`)
+## 💻 2. Script Python en Ligne de Commande (`astro_distances.py`)
 
-Un script Python performant est également prêt à l'emploi.
-
-### A. Distance actuelle instantanée :
+### A. Rapport complet du Mois Lunaire (29 ou 30 jours) :
 ```bash
-python3 astro_distances.py --lang fr
+python3 astro_distances.py --lunar
 ```
 
-### B. Distance pour une date et heure précise :
+### B. Lister tous les mois lunaires d'une année (ex: 2026) avec leur durée (29 ou 30 jours) :
 ```bash
-python3 astro_distances.py --date "2000-01-01 12:00:00" --lang fr
-python3 astro_distances.py --date "2024-08-15 20:30:15" --lang fr
+python3 astro_distances.py --lunar-year 2026
 ```
 
-### C. Mode Direct dans le Terminal (Mise à jour chaque seconde) :
+### C. Calcul instantané des distances :
 ```bash
-python3 astro_distances.py --live --lang fr
+python3 astro_distances.py
 ```
-*(Appuyez sur `Ctrl+C` pour quitter)*
 
-### D. Calcul jour par jour entre 2000 et aujourd'hui (Export CSV) :
+### D. Calcul pour une date et heure précise :
+```bash
+python3 astro_distances.py --date "2000-01-01 12:00:00"
+```
+
+### E. Mode Direct (Mise à jour chaque seconde dans le terminal) :
+```bash
+python3 astro_distances.py --live
+```
+
+### F. Calcul jour par jour entre 2000 et aujourd'hui (Export CSV) :
 ```bash
 python3 astro_distances.py --range 2000-01-01 2026-11-16 --step day --output distances_2000_2026.csv
 ```
 
-### E. Calcul chaque seconde (sur une plage courte) :
-```bash
-python3 astro_distances.py --range "2026-11-16 12:00:00" "2026-11-16 12:05:00" --step second --output par_seconde.csv
-```
-
 ---
 
-## 📐 Grandeurs et Précision des Calculs
+## 📐 Mécanique Céleste & Mois Lunaire (29 ou 30 Jours)
 
-- **Algorithmes** : Basés sur les éphémérides VSOP87 (planètes) et ELP2000 (Lune), avec correction du temps de trajet de la lumière et de l'aberration.
-- **Unité Astronomique (UA)** : $1\text{ UA} = 149\,597\,870.7\text{ km}$ (distance moyenne Terre-Soleil).
-- **Temps lumière** : Calculé à la vitesse de la lumière $c = 299\,792.458\text{ km/s}$ :
-  - Terre $\leftrightarrow$ Lune : $\approx 1.28$ à $1.35$ seconde
-  - Terre $\leftrightarrow$ Soleil : $\approx 8$ minutes 13 secondes
-  - Terre $\leftrightarrow$ Mars : de $3$ minutes (au plus proche) à $22$ minutes (au plus loin)
-  - Terre $\leftrightarrow$ Pluton : $\approx 4$ à $5$ heures
-- **Vitesse Radiale (km/s)** : Dérivée par différence finie instantanée à $1\text{ s}$, indiquant en temps réel si l'astre se rapproche (▼) ou s'éloigne (▲) de la Terre.
-
-# chlefastro
+- **Mois Synodique Moyen** : $\approx 29.53059\text{ jours}$ ($29\text{ jours, } 12\text{ heures, } 44\text{ minutes}$).
+- **Variation Réelle** : En raison de l'excentricité de l'orbite de la Lune et de la Terre, la durée d'une lunaison réelle oscille entre **$29.27$ jours** ($\approx 29\text{j } 06\text{h}$) et **$29.83$ jours** ($\approx 29\text{j } 20\text{h}$).
+- **Règle des 29 / 30 jours** :
+  - Si la lunaison astronomique est inférieure à $29.5$ jours, le mois civil/calendaire compte **29 jours**.
+  - Si la lunaison astronomique dépasse $29.5$ jours, le mois civil/calendaire compte **30 jours**.
